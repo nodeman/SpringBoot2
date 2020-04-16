@@ -1,0 +1,52 @@
+*설치
+    1. Java: JDK 1.8+
+    2. Build: Gradle
+    3. VCS: Git
+    4. Editor : IntelliJ Community
+
+[1] Java JDK 설치
+    a. JDK다운로드 및 설치 (Orale or http://jdk.java.net)
+        c:\Dev\Jdk
+    b. 환경변수 (Window Settings 검색 -> "환경"명으로검색)
+        JAVA_HOME - c:\Dev\Jdk
+        PATH - ;%JAVA_HOME%\bin (set path or $Env:Path)
+    c. java -version, javac -version
+
+[2] Gradle Build Tool
+    a. https://gradle.org/ 다운로드 (https://gradle.org/releases/)
+    b. C:\Dev\Gradle 압축풀고
+    c. 시스템 변수에
+        GRADLE_HOME -
+        Path - %GRADLE_HOME%\bin
+    e. cmd에서
+        gradle
+        gradle -v
+        gradle tasks
+    f. build.gradle 파일에
+        task hello {
+                doLast {
+                     println "Hello, Gradle"
+                }
+        }
+       cmd에서 gradle hello
+
+    g. build.gradle 파일에
+        apply plugin: 'java'
+
+       src/main/java/com/test/Hello.java 파일만들고
+       cmd에서 gradle build
+
+    h. IntelliJ Gradle 프로젝트 gradle\wrapper\gradle-wrapper.properties에
+        distributionUrl=gradle-4.10.3-bin.zip 고치고 해당파일 저장
+
+[3] Github
+    1. github 다운로드 및 설치
+        git --version
+    2. github 계정만들기
+    3. Settings -> Version Control -> Git -> Path to Git executabe (Test)
+    4. 에디터 연동 Ctrl + Shift + A   [share project on github] or
+        Settings → Version Control → GitHub → Add account
+    5. VCS -> Enable Version Control Intergration
+    6. Ctrl + K: Commit,  Ctrl + Shift + K: Push(git url 입력)
+       Alt + Enter : 패키지 가져요기
+       Ctrl + Alt + F10 : Run

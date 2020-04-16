@@ -27,4 +27,9 @@ public class HelloControllerTest {
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(content().string(hello));
     }
+
+    @Test
+    public void my_test() {
+        System.out.println("my_test");
+    }
 }

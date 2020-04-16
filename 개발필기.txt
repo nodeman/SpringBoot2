@@ -50,3 +50,8 @@
     6. Ctrl + K: Commit,  Ctrl + Shift + K: Push(git url 입력)
        Alt + Enter : 패키지 가져요기
        Ctrl + Alt + F10 : Run
+
+[4] Lombok
+    1. 라이브러리 다운로드 : compile 'org.projectlombok:lombok'
+    2. 플러그인 설치 : Ctrl + Shift + A -> Plugins
+    3. 에디터활성화 : Settings -> Build -> Compiler -> Annotation Processors -> Enable annotation processing 체크

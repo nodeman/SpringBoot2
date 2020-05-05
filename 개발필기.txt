@@ -55,3 +55,15 @@
     1. 라이브러리 다운로드 : compile 'org.projectlombok:lombok'
     2. 플러그인 설치 : Ctrl + Shift + A -> Plugins
     3. 에디터활성화 : Settings -> Build -> Compiler -> Annotation Processors -> Enable annotation processing 체크
+
+
+[5] Spring Data JPA
+    1. 라이브러리추가
+        compile 'org.springframework.boot: spring-boot-starter-data-jpa'
+        compile 'com.h2database:h2'
+
+    2. Entity 작성
+    3. Repository 작성
+    4. Test 작성
+
+

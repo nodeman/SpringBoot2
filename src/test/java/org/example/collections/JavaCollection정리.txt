@@ -1,0 +1,38 @@
+Collection
+    1. List: ArrayList, LinkedList
+    2. Set: HashSet - SortedSet: TreeSet
+    3. Queue: PriorityQueue - Deque: LinkedList, ArrayDeque
+
+Map: HashMap, SortedMap - SortedMap: TreeMap
+
+
+
+Elements가 키를 갖냐? --yes--> 순서가 중요하냐? (yes: SortedMap, no:Map)
+ no
+ |
+Elements가 유니크하냐?  --yes--> 순서가 중요하냐? (yes: SortedSet, no: Set)
+ |
+ no
+ |
+First in, First Out? --yes--> (Queue, Deque)
+ |
+ no
+ |
+Last In, First Out? --yes--> Deque
+ |
+ no
+ |
+List
+
+=======================================================================
+Collection 인터페이스
+1. size()
+2. isEmpty()
+3. add(element)
+4. addAll(collection)
+5. remove(element)
+6. removeAll(collection)
+7. retainAll(collection)
+8. contains(element)
+9. containsAll(collection)
+10. clear()

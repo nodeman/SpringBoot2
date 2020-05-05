@@ -1,0 +1,259 @@
+*
+    CI / CD를 어떻게 어느시점에서 할건지 중요.
+
+    모던앱
+        1. Dev App
+        2. Docker로 컨테이터화
+        3. 클라우드로 배포
+        4. CI/CD 자동화 시스템
+        5. 마이크로서비스 인프라베이스에서
+
+
+
+* 관련강좌
+    Getting Started with Docker
+    Docker Deep Drive
+    Getting Started with Kubernetes
+
+* 관련링크
+    https://hub.docker.com  (nodeman7)
+    https://labs.play-with-docker.com/
+    https://rampart81.github.io/post/docker_commands/
+
+
+    https://www.youtube.com/watch?v=JNc11rxLtmE
+    https://www.youtube.com/watch?v=-WWpJ1ZLQkw
+    https://www.youtube.com/watch?v=ul-WwsP7veM
+
+
+* Docker
+    1. Install Docker
+        windows용 설치하고 하단우측바 설정확인
+        윈도우 파워쉘에서 ps -> smss
+
+        docker container run \
+        docker container run \ --isolation-hyperv
+
+
+        linux
+            wget -qO- https://get.docker.com/ | sh
+            https://docs.docker.com/engine/install/ubuntu/
+
+
+        docker version
+        docker images (images: Stopped containers, Containers: Running Images)
+        docker info
+
+        docker run hello-world
+
+        docker ps
+        docker ps -a
+
+        * Copies images to the Docker Host: docker pull
+        docker pull alpine
+        docker pull ubuntu
+        docker pull ubuntu:14.04
+
+        docker rmi ubuntu:14.04
+
+
+        docker start <container>
+        docker stop <container>
+        docker rm <container>
+
+
+        docker run -d --name web -p 8088:8080 nigelpoulton/pluralsight-docker-ci
+        docker ps (실행중인 컨테이너 리스트)
+        docker stop web
+        docker start web
+
+
+        * Start new Container: docker run
+        docker run -it --name temp ubuntu:latest /bin/bash
+        docker stop $(docker ps -aq)
+
+
+        모든 도커 컨테이너 삭제(remove all docker containers)
+        docker stop $(docker ps -a -q)
+        docker rm $(docker ps -a -q)
+
+        모든 도커 이미지 삭제(remove all docker images)
+        docker rmi $(docker images -q)
+        docker image prune -a
+        docker image prune -a --filter "until=24h"
+
+
+        컨테이너 한번에 삭제하기
+        docker container prune
+        docker container prune --filter "until=24h"
+
+
+        docker system prune
+            This docker system prune clean the following stuff:
+
+        all stopped containers
+        all networks not used by at least one container
+        all dangling images
+        all dangling build cache
+
+
+
+
+        docker stop temp
+        docker ps -a
+        docker rm temp (정지된 컨테이너 삭제)
+        docker ps -a
+        docker rm -f temp
+
+=====================================================================================
+[Docker]
+
+[1] Images
+    포함파일
+        a. OS files & Objects
+        b. App files
+        c. Manifest
+
+    로컬에 저장 or 클라우드에 Registry등록
+
+    docker image pull로 클라우드에서 내려받음
+
+    docker image pull redis    cf)docker image push
+
+    docker image ls
+    docker image ls --digests
+
+    docker history redis
+    docker image inspect redis
+    docker image rm redis
+
+    Registry / Repo / Image
+    docker.io/nginx/1.15.5
+    docker.io/redis/latest
+    (default)       (default)
+
+    docker image pull docker.io/redis:4.0.  (https://hub.docker.com/_/redis, https://hub.docker.com/search?q=&type=image)
+
+    docker image pull nigelpoulton/tu-demo -a
+
+
+
+[2] Containerizing an App
+    Code - Dockerfile - [docker image build] - Image
+
+    vim Dockerfile
+        FROM alpine                             //Base Image
+        LABEL maintainer="nodeman@icloud.com"
+        RUN apk add --update nodejs nodejs-npm  //execute command and create layer
+        COPY . /src                             //copy code into images as new layer
+        WORKDIR /src
+        RUN npm install
+        EXPOSE 8080
+        ENTRYPOINT ["node", "./app.js"]         //default app for image/container
+
+
+    docker image build -t psweb .
+    docker image build -t psweb https://github.com/nigelpoulton/psweb.git
+    docker history psweb
+    docker image inspect psweb
+    docker image ls
+    docker container ls
+    docker container run -d --name web1 -p 8080:8080 psweb  (http://localhost:8080)
+    docker port web1
+
+    docker inspect -f "{{ .NetworkSettings.Networks.nat.IPAddress }}" web1
+    docker container rm $(docker container ls -aq) -f
+
+
+            * Multi-stage Builds
+            FROM node:latest AS storefront
+            WORKDIR /usr/src/atsea/app/react-app
+            COPY react-app
+            RUN npm install
+            RUN npm run build
+
+            FROM maven:latest AS appserver
+            WORKDIR /usr/src/atsea
+            COPY pom.xml
+            RUN mvn -B -f pom.xml -s /usr/share/maven/ref/settings-docker.xml dependency:resolve
+            COPY . .
+            RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml package -DskipTests
+
+            FROM java:8-jdk-alpine AS production
+            RUN adduser -Dh /home/gordon gordon
+            WORKDIR /static
+            COPY --from=storefront /usr/src/atsea/app/react-app/build/ .
+            WORKDIR /app
+            COPY --from=appserver /usr/src/atsea/target/AtSea-0.0.1-SNAPSHOT.jar .
+            ENTRYPOINT ["java", "-jar", "/app/atSea-0.0.1-SNAPSHOT.jar"]
+            CMD ["--spring.profiles.active=postgres"]
+
+            -->docker image build -t multistage .
+
+[3] Containers (적재 안되었으면 run, 적재되었으면 start)
+    docker container ls
+    docker container run -it alpine
+    docker image inspect alpine 해서보면  "Cmd": ["/bin/sh"] 이렇게 되어있음
+
+
+    docker container run -it alpine sh   (Ctrl + p + q or exit)
+    docker container run -d alpine sleep 1d
+
+    (docker container ls == docker ps)
+    docker container stop 01 (<-- Container ID의 첫2자리 패턴으로 찾아 stop시킴)
+    docker container start 01
+
+    docker container exec -it 01 sh
+
+    docker container start 0d
+    docker container exec 0d ls -l
+
+    docker container rm $(docker container ls -qa) -f
+
+    docker container run -d --name web1 -p 80:80 microsoft/iis
+
+
+
+    * Logging
+        1. Linux
+            systemd: journalctl -u docker.service
+            Non-systemd: try /var/log/messages
+
+        2. windows
+            ~/AppData/Local/Docker
+
+
+        Container/App
+          |       |
+        STDOUT  STDERR
+
+        a. Set default logging driver in deamon.json
+        b. Override per-container with  --log-driver  --log-opts
+        c. Inspect logs with docker logs <container>
+
+
+
+* 간단 명령어
+    docker image ls
+    docker container run -d --name web -p 8080:8080 nigelpoulton/ctr-demo:1
+    브라우저에서 http://ip:8080로 확인
+    docker stop web
+    docker container start web
+
+* Docker 실행과정
+    1. 코드작성
+    2. Docker Container화 하기위해 image 빌드
+        docker image build -t nigelpoulton/ctr-demo:2 .
+        docker image ls nigelpoulton/ctr-demo:2
+    3. push for register
+        docker image push nigelpoulton/ctr-demo:2
+    4. start container
+        docker container run -d --name web -p 8000:8080 nigelpoulton/ctr-demo:2
+    5. http://localhost:8000
+
+* Kubernetes
+    도커의 node단위로 k8s agent를 심고 k8s Control plane이 중앙집중적으로 관리
+    Scheduling, scaling, healing, updating...
+
+
+
